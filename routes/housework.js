@@ -18,13 +18,18 @@ router.get("/:id", getHouseworkByID, (req, res) => {
 });
 //creating one
 router.post("/", async (req, res) => {
+  const { taskName, assignee, dueDate, status, priority, score } = req.body;
+  const existingTask = await Housework.findOne({ taskName });
+  if (existingTask) {
+    return res.status(409).json({ message: "Task name already exists." });
+  }
   const housework = new Housework({
-    taskName: req.body.taskName,
-    assignee: req.body.assignee,
-    dueDate: req.body.dueDate,
-    status: req.body.status,
-    priority: req.body.priority,
-    score: req.body.score,
+    taskName,
+    assignee,
+    dueDate,
+    status,
+    priority,
+    score,
   });
   try {
     const newHousework = await housework.save();
@@ -33,6 +38,7 @@ router.post("/", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 //update one
 router.patch("/:id", getHouseworkByID, async (req, res) => {
   if (req.body.taskName != null) {
