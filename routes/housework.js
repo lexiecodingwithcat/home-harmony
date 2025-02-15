@@ -41,29 +41,52 @@ router.post("/", async (req, res) => {
 
 //update one
 router.patch("/:id", getHouseworkByID, async (req, res) => {
-  if (req.body.taskName != null) {
-    res.housework.taskName = req.body.taskName;
+  const { taskName, assignee, dueDate, status, priority, score } = req.body;
+  if (taskName != null) {
+    res.housework.taskName = taskName;
   }
-  if (req.body.assignee != null) {
-    res.housework.assignee = req.body.assignee;
+  if (assignee != null) {
+    res.housework.assignee = assignee;
   }
-  if (req.body.dueDate != null) {
-    res.housework.dueDate = req.body.dueDate;
+  if (dueDate != null) {
+    res.housework.dueDate = dueDate;
   }
-  if (req.body.status != null) {
-    res.housework.status = req.body.status;
+  if (status != null) {
+    res.housework.status = status;
   }
-  if (req.body.priority != null) {
-    res.housework.priority = req.body.priority;
+  if (priority != null) {
+    res.housework.priority = priority;
   }
-  if (req.body.score != null) {
-    res.housework.score = req.body.score;
+  if (score != null) {
+    res.housework.score = score;
   }
   try {
     const updateHousework = await res.housework.save();
     res.json(updateHousework);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+});
+
+//PUT
+router.put("/:id", getHouseworkByID, async (req, res) => {
+  const { taskName } = req.body;
+  const newHousework = req.body;
+  try {
+    // check wether the studentID is exsit or not
+    const existingTask = await Housework.findOne({ taskName });
+    if (existingTask) {
+      const updatedHousework = await res.housework.save();
+      res.json({
+        message: "Housework updated successfully",
+        housework: updatedHousework,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: `An error occured: ${err.message}`,
+    });
   }
 });
 
@@ -83,7 +106,7 @@ async function getHouseworkByID(req, res, next) {
   try {
     housework = await Housework.findById(req.params.id);
     if (housework == null) {
-      return res.status(404).json({ message: "Cannot find housework" });
+      return res.status(404).json({ message: "Housework does not exist." });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });

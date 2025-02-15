@@ -5,7 +5,7 @@
   "scripts": {
     "devStart": "nodemon server.js"
   },
-  "author": "Lexie",
+  "author": "Tianzi",
   "license": "ISC",
   "description": "",
   "dependencies": {
